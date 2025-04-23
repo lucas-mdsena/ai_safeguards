@@ -1,2 +1,2 @@
-# ai_safeguards
-AISafeguards is a Python packages with easy to use RAG metrics
+# AISafeguards
+AISafeguards is a Python package with easy to use RAG metrics.
