@@ -6,7 +6,7 @@ import numpy as np
 from openai import OpenAI
 from sklearn.metrics.pairwise import cosine_similarity
 
-from prompts import CLAIM_EXTRACTOR_PROMPT
+from .prompts import CLAIM_EXTRACTOR_PROMPT
 
 
 

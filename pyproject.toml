@@ -1,9 +1,9 @@
 [project]
 name = "ai_safeguards"
-version = "0.0.1"
+version = "0.0.2"
 description = "AISafeguards is a Python package with easy to use RAG metrics."
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "MIT"
 authors = [
   {name = "Lucas Miranda de Sena", email = "lucas.msena@outlook.com"}
 ]
@@ -17,3 +17,7 @@ dependencies = [
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[project.urls]
+"Homepage" = "https://github.com/seu-usuario/ai_safeguards"
+"Bug Tracker" = "https://github.com/seu-usuario/ai_safeguards/issues"
