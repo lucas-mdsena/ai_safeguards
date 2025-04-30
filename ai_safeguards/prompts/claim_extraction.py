@@ -1,6 +1,8 @@
 CLAIM_EXTRACTOR_PROMPT = """
-You are a specialist in analyzing responses. 
-Based on the provided text, extract a list of claims that can be inferred from the given text.
+You are a specialist in analyzing responses.
+
+*Instruction*
+- Based on the provided text, extract a list of claims that can be inferred from the given text.
 
 *EXAMPLE*
 - Sample text:
@@ -17,5 +19,6 @@ Based on the provided text, extract a list of claims that can be inferred from t
         "Higher atmospheric pressure leads to a higher boiling point."]
 }}
 
+*Response format*
 Return your response as a JSON object.
 """
