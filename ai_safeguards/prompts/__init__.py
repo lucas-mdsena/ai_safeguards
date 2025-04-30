@@ -1,1 +1,2 @@
 from .claim_extraction import CLAIM_EXTRACTOR_PROMPT
+from .factuality_evaluator import FACTUALITY_EVALUATOR_PROMPT
