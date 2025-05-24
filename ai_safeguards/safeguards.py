@@ -71,6 +71,115 @@ class Safeguards:
 
             return claims
 
+    def eval_factuality(
+        self, 
+        claims: List[str], 
+        context: str
+    ) -> Dict[str, List[str]]:
+        """Evaluates claims factuality based on the given context.
+
+        ### Args:
+            - claims (List[str]): claims extracted from LLM agent response.
+            - context (str): retrived context to support or refute the extracted claims.
+
+        ### Returns:
+            - (dict): supported claims and unsupported claims.
+        """
+        agent = GPTAgent(
+                api_key=self.api_key,
+                model_name=self.model_name,
+                input_text="\n> ".join(claims),
+                instructions_prompt=FACTUALITY_EVALUATOR_PROMPT.format(context=context),
+                model_settings=gpt_factuality_settings
+            )
+        llm_output = agent()
+        factuality = llm_output
+
+        return factuality  
+    
+    # TODO: implements the methods bellow
+ 
+    def faithfulness(
+        self,
+        response: str,
+        context: str,
+        claim_extraction_method: str,
+    ) -> Dict[str, Any]:
+        """
+        Evaluates how much of the answer is grounded within the provided context.
+
+        ### Args:
+            - response (str): llm generated answer or output to be evaluated.
+            - context (str): retrieved context to support or refute the claims in the response.
+            - claim_extraction_method (str): method to extract claims from the response ('llm' or 'regex').
+
+        ### Returns:
+            - (dict): contains the faithfulness score, supported claims, and non-supported claims.
+        """
+        response_claims = self.extract_claims(text=response, extraction_method=claim_extraction_method)
+        results = self.eval_factuality(claims=response_claims, context=context)
+        faithfulness_score = len(factuality["supported_claims"]) / len(response_claims)
+
+        return {
+            "faithfulness_score": faithfulness_score,
+            "supported_claims": results["supported_claims"],
+            "non_supported_claims": results["non_supported_claims"]
+        }
+
+    def answer_relevancy(
+        self,
+        response: str,
+        query: str,
+        claim_extraction_method: str,
+    ) -> Dict[str, Any]:
+        """
+        Evaluates how much the of the answer is relevant to the query/input.
+
+        ### Args:
+            - response (str): llm generated answer or output to be evaluated.
+            - query (str): user query to it's RAG pipeline, used to support or refute the claims in the response.
+            - claim_extraction_method (str): method to extract claims from the response ('llm' or 'regex').
+
+        ### Returns:
+            - (dict): contains the answer relevancy score, supported claims, and non-supported claims.
+        """
+        response_claims = self.extract_claims(text=response, extraction_method=claim_extraction_method)
+        results = self.eval_factuality(claims=response_claims, context=query)
+        answer_relevancy_score = len(results['supported_claims']) / len(response_claims)
+
+        return {
+            "answer_relevancy_score": answer_relevancy_score,
+            "supported_claims": results["supported_claims"],
+            "non_supported_claims": results["non_supported_claims"]
+        }
+
+    def contextual_relevancy(
+        self,
+        context: str,
+        query: str,
+        claim_extraction_method: str,
+    ) -> Dict[str, Any]:
+        """
+        Evaluates how much the of the retrieved context is relevant to the query/input.
+
+        ### Args:
+            - context (str): retrieved context from user's RAG pipeline.
+            - query (str): user query to it's RAG pipeline, used to support or refute the claims in the context.
+            - claim_extraction_method (str): method to extract claims from the context ('llm' or 'regex').
+
+        ### Returns:
+            - (dict): contains the context relevancy score, supported claims, and non-supported claims.
+        """
+        context_claims = self.extract_claims(text=context, extraction_method=claim_extraction_method)
+        results = self.eval_factuality(claims=context_claims, context=query)
+        contextual_relevancy_score = len(results['supported_claims']) / len(context_claims)
+
+        return {
+            "contextual_relevancy_score": contextual_relevancy_score,
+            "supported_claims": results["supported_claims"],
+            "non_supported_claims": results["non_supported_claims"]
+        }
+
     # NOTE: compute_cosine_similarity is not working yet
     # def compute_cosine_similarity(
     #     self, 
@@ -99,43 +208,4 @@ class Safeguards:
     #         claim_array = np.array(c).reshape(1, -1)
     #         cos_sim.append(cosine_similarity(claim_array, context_array)[0][0])
         
-    #     return cos_sim 
-
-    def eval_factuality(
-        self, 
-        claims: List[str], 
-        context: str
-    ) -> Dict[str, List[str]]:
-        """Evaluates claims factuality based on the given context.
-
-        ### Args:
-            - claims (List[str]): claims extracted from LLM agent response.
-            - context (str): retrived context to support or refute the extracted claims.
-
-        ### Returns:
-            - (dict): supported claims and unsupported claims.
-        """
-        agent = GPTAgent(
-                api_key=self.api_key,
-                model_name=self.model_name,
-                input_text="\n> ".join(claims),
-                instructions_prompt=FACTUALITY_EVALUATOR_PROMPT.format(context=context),
-                model_settings=gpt_factuality_settings
-            )
-        llm_output = agent()
-        factuality = llm_output
-
-        return factuality  
-    
-    # TODO: implements the methods bellow
-    def faithfulness(self):
-        """How much the answer is grounded in the context."""
-        pass
-
-    def answer_relevancy(self):
-        """How much the answer is relevant to the query/input."""
-        pass
-
-    def contextual_relevancy(self):
-        """How much the retrieved context is relevant to the query/input."""
-        pass
+    #     return cos_sim
