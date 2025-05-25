@@ -25,11 +25,11 @@ class Safeguards:
         self,
         api_key: Optional[str] = None,
         model_name: Optional[str] = None,
-        embedder_model_name: Optional[str] = None,
+        # embedder_model_name: Optional[str] = None, # not working yet
     ) -> None:
         self.api_key = api_key
         self.model_name = model_name
-        self.embedder_model_name = embedder_model_name
+        # self.embedder_model_name = embedder_model_name # not working yet
         
     def extract_claims(
         self, 
@@ -118,7 +118,7 @@ class Safeguards:
         """
         response_claims = self.extract_claims(text=response, extraction_method=claim_extraction_method)
         results = self.eval_factuality(claims=response_claims, context=context)
-        faithfulness_score = len(factuality["supported_claims"]) / len(response_claims)
+        faithfulness_score = len(results["supported_claims"]) / len(response_claims)
 
         return {
             "faithfulness_score": faithfulness_score,
