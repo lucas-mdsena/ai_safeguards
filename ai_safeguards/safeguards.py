@@ -1,14 +1,22 @@
 import re
 import json
 from typing import List, Dict, Any, Optional
+
 import numpy as np
 from openai import OpenAI
+from pydantic import BaseModel
 from sklearn.metrics.pairwise import cosine_similarity
 
 from .prompts import CLAIM_EXTRACTOR_PROMPT, FACTUALITY_EVALUATOR_PROMPT
 from .agents import GPTAgent, gpt_claims_settings, gpt_factuality_settings
 from .embedders import Embedder
 
+
+
+class MetricResults(BaseModel):
+    score: float
+    supported_claims: List[str]
+    non_supported_claims: List[str]
 
 
 class Safeguards:
@@ -120,11 +128,13 @@ class Safeguards:
         results = self.eval_factuality(claims=response_claims, context=context)
         faithfulness_score = len(results["supported_claims"]) / len(response_claims)
 
-        return {
-            "faithfulness_score": faithfulness_score,
-            "supported_claims": results["supported_claims"],
-            "non_supported_claims": results["non_supported_claims"]
-        }
+        faithfulness = MetricResults(
+            score=faithfulness_score,
+            supported_claims=results["supported_claims"],
+            non_supported_claims=results["non_supported_claims"]
+        )
+
+        return faithfulness
 
     def answer_relevancy(
         self,
@@ -147,11 +157,13 @@ class Safeguards:
         results = self.eval_factuality(claims=response_claims, context=query)
         answer_relevancy_score = len(results['supported_claims']) / len(response_claims)
 
-        return {
-            "answer_relevancy_score": answer_relevancy_score,
-            "supported_claims": results["supported_claims"],
-            "non_supported_claims": results["non_supported_claims"]
-        }
+        answer_relevancy = MetricResults(
+            score=answer_relevancy_score,
+            supported_claims=results["supported_claims"],
+            non_supported_claims=results["non_supported_claims"]
+        )
+
+        return answer_relevancy
 
     def contextual_relevancy(
         self,
@@ -174,11 +186,13 @@ class Safeguards:
         results = self.eval_factuality(claims=context_claims, context=query)
         contextual_relevancy_score = len(results['supported_claims']) / len(context_claims)
 
-        return {
-            "contextual_relevancy_score": contextual_relevancy_score,
-            "supported_claims": results["supported_claims"],
-            "non_supported_claims": results["non_supported_claims"]
-        }
+        contextual_relevancy = MetricResults(
+            score=contextual_relevancy_score,
+            supported_claims=results["supported_claims"],
+            non_supported_claims=results["non_supported_claims"]
+        )
+
+        return contextual_relevancy
 
     # NOTE: compute_cosine_similarity is not working yet
     # def compute_cosine_similarity(

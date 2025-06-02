@@ -37,9 +37,9 @@ faithfulness_results = safeguards.faithfulness(
   claim_extraction_method='llm',
 )
 
-print(f"Faithfulness score: {faithfulness_results['faithfulness_score']}")
-print(f"Suported claims: {faithfulness_results['supported_claims']}")
-print(f"Unsuported claims: {faithfulness_results['non_supported_claims']}")
+print(f"Faithfulness score: {faithfulness_results.score}")
+print(f"Suported claims: {faithfulness_results.supported_claims}")
+print(f"Unsuported claims: {faithfulness_results.non_supported_claims}")
 ```
 
 ```sh
