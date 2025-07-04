@@ -1,6 +1,6 @@
 [project]
 name = "ai_safeguards"
-version = "0.0.3"
+version = "0.0.6"
 description = "AISafeguards is a Python package with easy to use RAG metrics."
 readme = "README.md"
 license = "MIT"
@@ -17,6 +17,11 @@ dependencies = [
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ai_safeguards*"]
+exclude = ["tests*", "other*"]
 
 [project.urls]
 "Homepage" = "https://github.com/seu-usuario/ai_safeguards"
